@@ -14,7 +14,7 @@ async def init():
         f'@{settings.db_host}:{settings.db_port}/{settings.db_name}'
     )
     logger.info('initializing database connection')
-    await Tortoise.init(db_url=db_url, modules={'models': ['src.models']})
+    await Tortoise.init(db_url=db_url, modules={'models': ['src.crud.models']})
     await Tortoise.generate_schemas()
     logger.info('database schemas generated')
 
