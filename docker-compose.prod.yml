@@ -29,3 +29,4 @@ services:
       YANDEX_GPT_FOLDER_ID: "${YANDEX_GPT_FOLDER_ID}"
     volumes:
       - ./guests_full.json:/app/guests_full.json:ro
+      - ./faq.json:/app/faq.json:ro
