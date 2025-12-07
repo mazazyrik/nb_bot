@@ -50,4 +50,5 @@ jobs:
                       export YANDEX_GPT_OAUTH_TOKEN=${{ secrets.YANDEX_GPT_OAUTH_TOKEN }}
                       export YANDEX_GPT_FOLDER_ID=${{ secrets.YANDEX_GPT_FOLDER_ID }}
                       docker-compose -f docker-compose.prod.yml pull app
-                      docker-compose -f docker-compose.prod.yml up -d --no-deps --force-recreate app
+                      docker-compose -f docker-compose.prod.yml rm -f app || true
+                      docker-compose -f docker-compose.prod.yml up -d --no-deps app
