@@ -10,7 +10,6 @@ from aiogram.types import (
 from texts import (
     MENU_DESCRIPTION_TEXT,
     MENU_IMAGE_URL,
-    MENU_PREDICTION_STUB_TEXT,
     MENU_RATE_LOOK_STUB_TEXT,
 )
 
@@ -63,11 +62,4 @@ async def menu_entry_callback(callback: CallbackQuery) -> None:
 async def menu_rate_look(callback: CallbackQuery) -> None:
     if callback.message is not None:
         await callback.message.answer(text=MENU_RATE_LOOK_STUB_TEXT)
-    await callback.answer()
-
-
-@menu_router.callback_query(F.data == 'menu_prediction')
-async def menu_prediction(callback: CallbackQuery) -> None:
-    if callback.message is not None:
-        await callback.message.answer(text=MENU_PREDICTION_STUB_TEXT)
     await callback.answer()

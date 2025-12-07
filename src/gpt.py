@@ -1,4 +1,3 @@
-import asyncio
 from pathlib import Path
 from typing import Optional
 
@@ -83,7 +82,3 @@ async def get_completion(name: str) -> Optional[str]:
                 return None
             message = alternatives[0].get('message') or {}
             return message.get('text')
-
-
-if __name__ == '__main__':
-    print(asyncio.run(get_completion('Никита')))

@@ -9,7 +9,8 @@ from handlers.faq import faq_router
 from handlers.whishes import whishes_router
 from handlers.registration import registration_router
 from handlers.start import start_router
-from middlewares.admin_role import AdminRoleMiddleware, Auth
+from middlewares.admin_role import AdminRoleMiddleware
+from middlewares.check_visitor import Auth
 from settings import Settings
 from bot import init_bot
 from db_init import init as init_database_session
@@ -32,6 +33,7 @@ async def startup():
     bot = await init_bot(settings_config.bot_token, parse_mode)
     dp = Dispatcher()
     dp.message.middleware(Auth())
+    dp.callback_query.middleware(Auth())
     dp.message.middleware(AdminRoleMiddleware())
     dp.include_router(start_router)
     dp.include_router(registration_router)
