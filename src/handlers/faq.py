@@ -4,7 +4,7 @@ from pathlib import Path
 from aiogram import F, Router
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
-from texts import FAQ_LIST_TITLE_TEXT
+from texts import FAQ_IMAGE_URL, FAQ_LIST_TITLE_TEXT
 
 
 faq_router = Router()
@@ -41,7 +41,8 @@ def get_faq_keyboard() -> InlineKeyboardMarkup:
 @faq_router.callback_query(F.data == 'menu_faq')
 async def open_faq(callback: CallbackQuery) -> None:
     if callback.message is not None:
-        await callback.message.edit_text(
+        await callback.message.answer_photo(photo=FAQ_IMAGE_URL)
+        await callback.message.answer(
             text=FAQ_LIST_TITLE_TEXT,
             reply_markup=get_faq_keyboard(),
         )

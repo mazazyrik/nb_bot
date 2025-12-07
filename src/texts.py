@@ -55,3 +55,10 @@ FAQ_LIST_TITLE_TEXT = (
 )
 MENU_RATE_LOOK_STUB_TEXT = 'Совсем скоро здесь можно будет оценить ваш новогодний лук ✨'
 MENU_PREDICTION_STUB_TEXT = 'Скоро вы получите персональное новогоднее предсказание 🔮'
+
+WELCOME_IMAGE_URL = (
+    'https://raw.githubusercontent.com/mazazyrik/nb_bot/refs/heads/main/media/'
+    'test_pic.png?token=GHSAT0AAAAAADM76XP4DBRWS4UQX7WMCI5I2JVOX5Q'
+)
+MENU_IMAGE_URL = WELCOME_IMAGE_URL
+FAQ_IMAGE_URL = WELCOME_IMAGE_URL

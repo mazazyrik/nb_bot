@@ -9,6 +9,7 @@ from aiogram.types import (
 
 from texts import (
     MENU_DESCRIPTION_TEXT,
+    MENU_IMAGE_URL,
     MENU_PREDICTION_STUB_TEXT,
     MENU_RATE_LOOK_STUB_TEXT,
 )
@@ -39,6 +40,7 @@ def get_menu_keyboard() -> InlineKeyboardMarkup:
 
 
 async def send_menu(message: Message) -> None:
+    await message.answer_photo(photo=MENU_IMAGE_URL)
     await message.answer(
         text=MENU_DESCRIPTION_TEXT,
         reply_markup=get_menu_keyboard(),
