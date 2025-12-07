@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  db:
+    image: "postgres:13.2-alpine"
+    container_name: nb_database
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+
+  app:
+    image: "mazazyrik/nb-bot:latest"
+    container_name: nb_bot
+    depends_on:
+      - db
+    environment:
+      BOT_TOKEN: "${BOT_TOKEN}"
+      MEMBERS_JSON_NAME: "${MEMBERS_JSON_NAME}"
+      PARSE_MODE: "${PARSE_MODE}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_HOST: "db"
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      YANDEX_GPT_OAUTH_TOKEN: "${YANDEX_GPT_OAUTH_TOKEN}"
+      YANDEX_GPT_FOLDER_ID: "${YANDEX_GPT_FOLDER_ID}"
+    volumes:
+      - ./guests_full.json:/app/guests_full.json:ro
