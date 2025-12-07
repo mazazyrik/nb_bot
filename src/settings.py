@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     postgres_port: int = Field(..., env='POSTGRES_PORT')
     postgres_db: str = Field(..., env='POSTGRES_DB')
 
+    yandex_gpt_oauth_token: str = Field(..., env='YANDEX_GPT_OAUTH_TOKEN')
+    yandex_gpt_folder_id: str = Field(..., env='YANDEX_GPT_FOLDER_ID')
+
     class Config:
         env_file = '.env'
         env_file_encoding = 'utf-8'

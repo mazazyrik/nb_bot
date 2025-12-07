@@ -19,3 +19,4 @@ class Visitor(Model):
     grade = fields.CharField(max_length=100, null=False)
     phone = fields.CharField(max_length=100, null=True, unique=False)
     email = fields.CharField(max_length=100, null=True, unique=True)
+    whish = fields.TextField(null=True)
