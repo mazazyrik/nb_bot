@@ -41,5 +41,5 @@ jobs:
                   password: ${{ secrets.SSH_PRIVATE_KEY }}
                   port: ${{ secrets.SSH_PORT }}
                   script: |
-                      docker compose -f docker-compose.prod.yml pull app
-                      docker compose -f docker-compose.prod.yml up -d --no-deps --force-recreate app
+                      docker-compose -f docker-compose.prod.yml pull app
+                      docker-compose -f docker-compose.prod.yml up -d --no-deps --force-recreate app
