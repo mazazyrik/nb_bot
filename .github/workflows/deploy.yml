@@ -38,9 +38,8 @@ jobs:
               with:
                   host: ${{ secrets.SSH_HOST }}
                   username: ${{ secrets.SSH_USER }}
-                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  password: ${{ secrets.SSH_PRIVATE_KEY }}
                   port: ${{ secrets.SSH_PORT }}
                   script: |
-                      cd ${{ secrets.APP_PATH }}
                       docker compose -f docker-compose.prod.yml pull app
                       docker compose -f docker-compose.prod.yml up -d --no-deps --force-recreate app
