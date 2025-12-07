@@ -27,3 +27,5 @@ services:
       POSTGRES_DB: "${POSTGRES_DB}"
       YANDEX_GPT_OAUTH_TOKEN: "${YANDEX_GPT_OAUTH_TOKEN}"
       YANDEX_GPT_FOLDER_ID: "${YANDEX_GPT_FOLDER_ID}"
+    volumes:
+      - ./guests_full.json:/app/guests_full.json:ro
