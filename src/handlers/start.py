@@ -9,6 +9,7 @@ from crud.enums import RoleEnum
 from crud.models import Admin, Visitor
 from handlers.registration import get_menu_keyboard, start_registration
 from texts import (
+    REGISTRATION_WELCOME,
     START_ADMIN_TEXT,
     START_HEAD_TEXT,
     START_MODERATOR_TEXT,
@@ -28,28 +29,34 @@ async def start(
     visitor: Optional[Visitor],
     state: FSMContext,
 ) -> None:
-    await message.answer_photo(photo=WELCOME_IMAGE_URL)
-
     if admin:
         if admin_role == RoleEnum.ADMIN:
-            await message.answer(
-                text=START_ADMIN_TEXT,
+            await message.answer_photo(
+                photo=WELCOME_IMAGE_URL,
+                caption=START_ADMIN_TEXT,
             )
         elif admin_role == RoleEnum.MODERATOR:
-            await message.answer(
-                text=START_MODERATOR_TEXT,
+            await message.answer_photo(
+                photo=WELCOME_IMAGE_URL,
+                caption=START_MODERATOR_TEXT,
             )
         elif admin_role == RoleEnum.HEAD:
-            await message.answer(
-                text=START_HEAD_TEXT,
+            await message.answer_photo(
+                photo=WELCOME_IMAGE_URL,
+                caption=START_HEAD_TEXT,
             )
         return
 
     if visitor:
-        await message.answer(
-            text=START_VISITOR_RETURN_TEXT,
+        await message.answer_photo(
+            photo=WELCOME_IMAGE_URL,
+            caption=START_VISITOR_RETURN_TEXT,
             reply_markup=get_menu_keyboard(),
         )
         return
 
+    await message.answer_photo(
+        photo=WELCOME_IMAGE_URL,
+        caption=REGISTRATION_WELCOME,
+    )
     await start_registration(message, state)

@@ -4,7 +4,7 @@ from pathlib import Path
 from aiogram import F, Router
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
-from texts import FAQ_IMAGE_URL, FAQ_LIST_TITLE_TEXT
+from texts import FAQ_LIST_TITLE_TEXT
 
 
 faq_router = Router()
@@ -40,18 +40,30 @@ def get_faq_keyboard() -> InlineKeyboardMarkup:
 
 @faq_router.callback_query(F.data == 'menu_faq')
 async def open_faq(callback: CallbackQuery) -> None:
-    if callback.message is not None:
-        await callback.message.answer_photo(photo=FAQ_IMAGE_URL)
-        await callback.message.answer(
+    message = callback.message
+    if message is None:
+        await callback.answer()
+        return
+
+    # если сообщение с фото и подписью (как меню) — редактируем подпись
+    if message.photo:
+        await message.edit_caption(
+            caption=FAQ_LIST_TITLE_TEXT,
+            reply_markup=get_faq_keyboard(),
+        )
+    else:
+        await message.edit_text(
             text=FAQ_LIST_TITLE_TEXT,
             reply_markup=get_faq_keyboard(),
         )
+
     await callback.answer()
 
 
 @faq_router.callback_query(F.data.startswith('faq_q_'))
 async def show_faq_answer(callback: CallbackQuery) -> None:
-    if callback.message is None or callback.data is None:
+    message = callback.message
+    if message is None or callback.data is None:
         await callback.answer()
         return
 
@@ -91,5 +103,15 @@ async def show_faq_answer(callback: CallbackQuery) -> None:
         ]
     )
 
-    await callback.message.edit_text(text=text, reply_markup=keyboard)
+    if message.photo:
+        await message.edit_caption(
+            caption=text,
+            reply_markup=keyboard,
+        )
+    else:
+        await message.edit_text(
+            text=text,
+            reply_markup=keyboard,
+        )
+
     await callback.answer()

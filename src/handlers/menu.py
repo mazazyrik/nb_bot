@@ -40,9 +40,9 @@ def get_menu_keyboard() -> InlineKeyboardMarkup:
 
 
 async def send_menu(message: Message) -> None:
-    await message.answer_photo(photo=MENU_IMAGE_URL)
-    await message.answer(
-        text=MENU_DESCRIPTION_TEXT,
+    await message.answer_photo(
+        photo=MENU_IMAGE_URL,
+        caption=MENU_DESCRIPTION_TEXT,
         reply_markup=get_menu_keyboard(),
     )
 
