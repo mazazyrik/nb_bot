@@ -5,6 +5,7 @@ from aiogram import Dispatcher
 from aiogram.enums import ParseMode
 
 from handlers.menu import menu_router
+from handlers.faq import faq_router
 from handlers.registration import registration_router
 from handlers.start import start_router
 from middlewares.admin_role import AdminRoleMiddleware, Auth
@@ -34,6 +35,7 @@ async def startup():
     dp.include_router(start_router)
     dp.include_router(registration_router)
     dp.include_router(menu_router)
+    dp.include_router(faq_router)
     logger.info('starting bot polling')
 
     try:
