@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     yandex_gpt_folder_id: str = Field(..., env='YANDEX_GPT_FOLDER_ID')
 
     class Config:
-        env_file = '.env'
+        env_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
         env_file_encoding = 'utf-8'
         extra = 'ignore'
 

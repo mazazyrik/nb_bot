@@ -14,6 +14,6 @@ RUN poetry install --only main --no-root
 
 COPY src .
 
-CMD python -m main
+CMD poetry run python3 -m main
 
 
