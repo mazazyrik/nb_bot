@@ -1,11 +1,11 @@
 from typing import Any, Awaitable, Callable, Dict, Iterable, Optional
 
 from aiogram import BaseMiddleware
-from aiogram.types import Message, CallbackQuery, Update
+from aiogram.types import CallbackQuery, Message, Update
 
 from crud.enums import RoleEnum
-from crud.exceptions import AdminNotFound
-from crud.models import Admin
+from crud.models import Admin, Visitor
+from texts import NO_PERMISSIONS_TEXT
 
 
 EventType = Message | CallbackQuery | Update
@@ -29,7 +29,9 @@ class AdminRoleMiddleware(BaseMiddleware):
         telegram_id = from_user.id
         admin = await Admin.get_or_none(telegram_id=telegram_id)
         if admin is None:
-            raise AdminNotFound(telegram_id)
+            data['admin'] = None
+            data['admin_role'] = None
+            return await handler(event, data)
 
         data['admin'] = admin
         data['admin_role'] = admin.role
@@ -38,8 +40,27 @@ class AdminRoleMiddleware(BaseMiddleware):
             bot = data.get('bot')
             if bot is not None and hasattr(event, 'chat'):
                 await bot.send_message(
-                    chat_id=event.chat.id, text='у вас нет прав для этой команды'
+                    chat_id=event.chat.id,
+                    text=NO_PERMISSIONS_TEXT,
                 )
             return None
+
+        return await handler(event, data)
+
+
+class Auth(BaseMiddleware):
+    async def __call__(
+        self,
+        handler: HandlerType,
+        event: EventType,
+        data: Dict[str, Any],
+    ) -> Any:
+        from_user = getattr(event, 'from_user', None)
+        if from_user is None:
+            return await handler(event, data)
+
+        telegram_id = from_user.id
+        visitor = await Visitor.get_or_none(telegram_id=telegram_id)
+        data['visitor'] = visitor
 
         return await handler(event, data)

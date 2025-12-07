@@ -13,8 +13,9 @@ class Admin(Model):
 
 class Visitor(Model):
     id = fields.IntField(pk=True)
-    full_name = fields.CharField(null=False)
+    telegram_id = fields.IntField(unique=True, null=False)
+    full_name = fields.CharField(max_length=100, null=False)
     program = fields.CharEnumField(enum_type=InstitutueEnum, null=True)
-    grade = fields.CharField(null=False)
-    phone = fields.CharField(null=True, unique=False)
-    email = fields.CharField(null=True, unique=True)
+    grade = fields.CharField(max_length=100, null=False)
+    phone = fields.CharField(max_length=100, null=True, unique=False)
+    email = fields.CharField(max_length=100, null=True, unique=True)

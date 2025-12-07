@@ -4,11 +4,14 @@ import logging
 from aiogram import Dispatcher
 from aiogram.enums import ParseMode
 
-from middlewares.admin_role import AdminRoleMiddleware
+from handlers.menu import menu_router
+from handlers.registration import registration_router
+from handlers.start import start_router
+from middlewares.admin_role import AdminRoleMiddleware, Auth
 from settings import Settings
-from src.bot import init_bot
-from src.db_init import init as init_database_session
-from src.db_init import on_shutdown as close_db_session
+from bot import init_bot
+from db_init import init as init_database_session
+from db_init import on_shutdown as close_db_session
 
 
 logger = logging.getLogger(__name__)
@@ -26,7 +29,11 @@ async def startup():
     parse_mode = ParseMode[settings_config.parse_mode]
     bot = await init_bot(settings_config.bot_token, parse_mode)
     dp = Dispatcher()
+    dp.message.middleware(Auth())
     dp.message.middleware(AdminRoleMiddleware())
+    dp.include_router(start_router)
+    dp.include_router(registration_router)
+    dp.include_router(menu_router)
     logger.info('starting bot polling')
 
     try:

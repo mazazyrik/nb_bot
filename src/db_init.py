@@ -10,11 +10,11 @@ settings = Settings()
 
 async def init():
     db_url = (
-        f'postgres://{settings.db_user}:{settings.db_password}'
-        f'@{settings.db_host}:{settings.db_port}/{settings.db_name}'
+        f'postgres://{settings.postgres_user}:{settings.postgres_password}'
+        f'@{settings.postgres_host}:{settings.postgres_port}/{settings.postgres_db}'
     )
     logger.info('initializing database connection')
-    await Tortoise.init(db_url=db_url, modules={'models': ['src.crud.models']})
+    await Tortoise.init(db_url=db_url, modules={'models': ['crud.models']})
     await Tortoise.generate_schemas()
     logger.info('database schemas generated')
 
