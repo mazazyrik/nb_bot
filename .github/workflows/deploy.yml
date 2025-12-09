@@ -33,6 +33,19 @@ jobs:
         needs: build_and_push_to_docker_hub
 
         steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Upload faq.json via SCP
+              uses: appleboy/scp-action@v0.1.7
+              with:
+                  host: ${{ secrets.SSH_HOST }}
+                  username: ${{ secrets.SSH_USER }}
+                  password: ${{ secrets.SSH_PRIVATE_KEY }}
+                  port: ${{ secrets.SSH_PORT }}
+                  source: "faq.json"
+                  target: "."
+
             - name: Deploy via SSH
               uses: appleboy/ssh-action@v1.2.0
               with:
