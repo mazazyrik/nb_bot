@@ -21,7 +21,7 @@ def get_menu_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text='ЧаВо', callback_data='menu_faq'),
+                InlineKeyboardButton(text='Частые вопросы', callback_data='menu_faq'),
             ],
             [
                 InlineKeyboardButton(
