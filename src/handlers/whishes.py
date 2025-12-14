@@ -9,11 +9,9 @@ from aiogram.types import (
 )
 
 from crud.models import Visitor
-from crud.operations import get_visitor_name
 from gpt import get_completion
 from texts import (
     BUTTON_MENU_TEXT,
-    WELCOME_IMAGE_URL,
     WISH_ALREADY_EXISTS_INFO_TEXT,
     WISH_LOADING_TEXT,
     WISH_NOT_REGISTERED_TEXT,
@@ -46,23 +44,18 @@ async def _process_whish(message: Message, visitor: Optional[Visitor]) -> None:
         )
         return
 
-    name = await get_visitor_name(message.from_user.id)
-    loading_message = await message.answer_photo(
-        photo=WELCOME_IMAGE_URL,
-        caption=WISH_LOADING_TEXT,
-    )
+    name = visitor.full_name
+    loading_message = await message.answer(text=WISH_LOADING_TEXT)
 
     whish_text = await get_completion(name)
     if not whish_text:
-        await loading_message.edit_caption(
-            caption='Что-то пошло не так, попробуй ещё раз чуть позже.'
-        )
+        await loading_message.edit_text('Что-то пошло не так, попробуй ещё раз чуть позже.')
         return
 
     visitor.whish = whish_text
     await visitor.save()
 
-    await loading_message.edit_caption(caption=whish_text)
+    await loading_message.edit_text(text=whish_text)
 
 
 @whishes_router.callback_query(F.data == 'menu_prediction')

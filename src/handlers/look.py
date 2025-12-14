@@ -280,9 +280,6 @@ async def look_comment_send(message: Message, state: FSMContext, admin: Optional
         await state.clear()
         return
 
-    request.status = 'commented'
-    await request.save()
-
     try:
         await message.bot.send_message(
             chat_id=request.visitor_telegram_id,
@@ -290,7 +287,13 @@ async def look_comment_send(message: Message, state: FSMContext, admin: Optional
         )
     except Exception:
         logger.exception('failed to send look comment to visitor %s', request.visitor_telegram_id)
+        await message.answer(text='Не получилось отправить сообщение, попробуй ещё раз')
+        return
+
+    request.status = 'commented'
+    await request.save()
 
     await state.clear()
+    await message.answer(text='Сообщение отправлено')
 
 
