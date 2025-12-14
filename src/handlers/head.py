@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Optional
 
@@ -93,7 +94,7 @@ async def _send_approved_looks(message: Message) -> None:
         text=f'Одобренных заявок: {len(approved)}',
         reply_markup=_looks_refresh_keyboard(),
     )
-    for request in approved:
+    for idx, request in enumerate(approved):
         caption = await _caption_for_request(request)
         try:
             await message.answer_photo(
@@ -102,6 +103,8 @@ async def _send_approved_looks(message: Message) -> None:
             )
         except Exception:
             logger.exception('failed to send approved look %s', request.id)
+        if (idx + 1) % 3 == 0 and (idx + 1) < len(approved):
+            await asyncio.sleep(1)
 
 
 @head_router.message(Command('_head'))

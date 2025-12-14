@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Optional
 
@@ -265,13 +266,18 @@ async def admin_looks_pending(callback: CallbackQuery) -> None:
 
     if callback.message is not None:
         await callback.message.answer(text=f'Активных заявок: {len(pending)}')
-        for request in pending:
+        for idx, request in enumerate(pending):
             caption = await _caption_for_request(request)
-            await callback.message.answer_photo(
-                photo=request.photo_file_id,
-                caption=caption,
-                reply_markup=_review_keyboard(str(request.id)),
-            )
+            try:
+                await callback.message.answer_photo(
+                    photo=request.photo_file_id,
+                    caption=caption,
+                    reply_markup=_review_keyboard(str(request.id)),
+                )
+            except Exception:
+                logger.exception('failed to send pending look %s', request.id)
+            if (idx + 1) % 3 == 0 and (idx + 1) < len(pending):
+                await asyncio.sleep(1)
 
     await callback.answer()
 
@@ -291,12 +297,17 @@ async def admin_looks_approved(callback: CallbackQuery) -> None:
 
     if callback.message is not None:
         await callback.message.answer(text=f'Одобренных заявок: {len(approved)}')
-        for request in approved:
+        for idx, request in enumerate(approved):
             caption = await _caption_for_request(request)
-            await callback.message.answer_photo(
-                photo=request.photo_file_id,
-                caption=caption,
-            )
+            try:
+                await callback.message.answer_photo(
+                    photo=request.photo_file_id,
+                    caption=caption,
+                )
+            except Exception:
+                logger.exception('failed to send approved look %s', request.id)
+            if (idx + 1) % 3 == 0 and (idx + 1) < len(approved):
+                await asyncio.sleep(1)
 
     await callback.answer()
 

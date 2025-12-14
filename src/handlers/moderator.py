@@ -1,9 +1,15 @@
+import asyncio
 import logging
 from typing import Optional
 
 from aiogram import F, Router
 from aiogram.filters import Command
-from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message
+from aiogram.types import (
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
+)
 
 from crud.enums import RoleEnum
 from crud.models import Admin, LookRequest, Visitor
@@ -59,11 +65,17 @@ async def _caption_for_request(request: LookRequest) -> str:
 async def _send_pending_requests(message: Message) -> None:
     pending = await LookRequest.filter(status='pending')
     if not pending:
-        await message.answer(text='Активных заявок нет', reply_markup=_refresh_keyboard())
+        await message.answer(
+            text='Активных заявок нет',
+            reply_markup=_refresh_keyboard(),
+        )
         return
 
-    await message.answer(text=f'Активных заявок: {len(pending)}', reply_markup=_refresh_keyboard())
-    for request in pending:
+    await message.answer(
+        text=f'Активных заявок: {len(pending)}',
+        reply_markup=_refresh_keyboard(),
+    )
+    for idx, request in enumerate(pending):
         caption = await _caption_for_request(request)
         try:
             await message.answer_photo(
@@ -73,6 +85,8 @@ async def _send_pending_requests(message: Message) -> None:
             )
         except Exception:
             logger.exception('failed to send pending look %s', request.id)
+        if (idx + 1) % 3 == 0 and (idx + 1) < len(pending):
+            await asyncio.sleep(1)
 
 
 def _is_moderator(admin: Optional[Admin], role: Optional[RoleEnum]) -> bool:

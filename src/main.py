@@ -49,7 +49,7 @@ async def startup():
     dp.include_router(look_router)
     dp.include_router(whishes_router)
     logger.info('starting bot polling')
-    bot.send_message(
+    await bot.send_message(
         chat_id=settings_config.admin_id,
         text='БОТ ЗАПУЩЕН!'
     )
