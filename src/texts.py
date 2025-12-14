@@ -52,9 +52,9 @@ FAQ_LIST_TITLE_TEXT = (
 )
 MENU_PREDICTION_STUB_TEXT = 'Скоро вы получите персональное новогоднее предсказание 🔮'
 
-WELCOME_IMAGE_URL = 'https://raw.githubusercontent.com/mazazyrik/nb_bot/refs/heads/main/media/welcome.png'
-MENU_IMAGE_URL = 'https://raw.githubusercontent.com/mazazyrik/nb_bot/refs/heads/main/media/menu.png'
-FAQ_IMAGE_URL = 'https://raw.githubusercontent.com/mazazyrik/nb_bot/refs/heads/main/media/faq.png'
+WELCOME_IMAGE_URL = 'https://raw.githubusercontent.com/mazazyrik/nb_bot/refs/heads/main/media/welcome1.png'
+MENU_IMAGE_URL = 'https://raw.githubusercontent.com/mazazyrik/nb_bot/refs/heads/main/media/menu1.png'
+FAQ_IMAGE_URL = 'https://raw.githubusercontent.com/mazazyrik/nb_bot/refs/heads/main/media/faq1.png'
 
 WISH_LOADING_TEXT = (
     'Составляем персональное новогоднее пожелание именно для тебя... ✨'
