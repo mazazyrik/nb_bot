@@ -78,9 +78,10 @@ async def process_phone(message: Message, state: FSMContext) -> None:
         InstitutueEnum(program_value) if program_value is not None else None
     )
 
-    await Visitor.get_or_create(
+    visitor, created = await Visitor.get_or_create(
         telegram_id=message.from_user.id,
         defaults={
+            'telegram_username': message.from_user.username,
             'full_name': record.get('ФИО', full_name),
             'program': program,
             'grade': grade,
@@ -88,6 +89,9 @@ async def process_phone(message: Message, state: FSMContext) -> None:
             'email': email,
         },
     )
+    if not created and not visitor.telegram_username and message.from_user.username:
+        visitor.telegram_username = message.from_user.username
+        await visitor.save()
 
     await state.clear()
     await message.answer(

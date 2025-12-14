@@ -69,6 +69,7 @@ jobs:
             export BOT_TOKEN=${{ secrets.BOT_TOKEN }}
             export MEMBERS_JSON_NAME=${{ secrets.MEMBERS_JSON_NAME }}
             export PARSE_MODE=${{ secrets.PARSE_MODE }}
+            export ADMIN_ID=${{ secrets.ADMIN_ID }}
             export YANDEX_GPT_OAUTH_TOKEN=${{ secrets.YANDEX_GPT_OAUTH_TOKEN }}
             export YANDEX_GPT_FOLDER_ID=${{ secrets.YANDEX_GPT_FOLDER_ID }}
             docker-compose -f docker-compose.prod.yml pull app

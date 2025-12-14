@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     members_json_name: str = Field(..., env='MEMBERS_JSON_NAME')
     parse_mode: str = Field(..., env='PARSE_MODE')
     redis_url: str = Field('redis://localhost:6379/0', env='REDIS_URL')
+    admin_id: int = Field(0, env='ADMIN_ID')
 
     postgres_user: str = Field(..., env='POSTGRES_USER')
     postgres_password: str = Field(..., env='POSTGRES_PASSWORD')
@@ -35,4 +36,3 @@ class Settings(BaseSettings):
     def _get_parse_mode(self):
         if self.parse_mode not in ParseMode.__members__:
             raise EnvVarNotFoundException('PARSE_MODE')
-            # харкод, тк не добраться до атрибута
