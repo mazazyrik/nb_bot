@@ -3,6 +3,7 @@ import logging
 
 from aiogram import Dispatcher
 from aiogram.enums import ParseMode
+from aiogram.fsm.storage.redis import RedisStorage
 
 from handlers.menu import menu_router
 from handlers.faq import faq_router
@@ -21,17 +22,15 @@ logger = logging.getLogger(__name__)
 
 
 async def startup():
-    # settings
     settings_config = Settings()
     settings_config._get_parse_mode()
 
-    # databse
     await init_database_session()
 
-    # bot
     parse_mode = ParseMode[settings_config.parse_mode]
     bot = await init_bot(settings_config.bot_token, parse_mode)
-    dp = Dispatcher()
+    storage = RedisStorage.from_url(settings_config.redis_url)
+    dp = Dispatcher(storage=storage)
     dp.message.middleware(Auth())
     dp.callback_query.middleware(Auth())
     dp.message.middleware(AdminRoleMiddleware())
@@ -46,6 +45,7 @@ async def startup():
         await dp.start_polling(bot)
     finally:
         logger.info('shutting down services')
+        await storage.close()
         await close_db_session()
         await bot.session.close()
 

@@ -13,6 +13,7 @@ dependencies = [
     "tortoise-orm[asyncpg] (>=0.25.1,<0.26.0)",
     "ruff (>=0.14.7,<0.15.0)",
     "yandex-gpt (>=0.3.0,<0.4.0) ; python_version >= \"3.9\" and python_version < \"4.0\"",
+    "redis (>=5.0.0,<6.0.0)",
     "requests (>=2.32.5,<3.0.0)"
 ]
 

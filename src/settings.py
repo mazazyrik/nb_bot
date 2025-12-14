@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     bot_token: str = Field(..., env='BOT_TOKEN')
     members_json_name: str = Field(..., env='MEMBERS_JSON_NAME')
     parse_mode: str = Field(..., env='PARSE_MODE')
+    redis_url: str = Field('redis://localhost:6379/0', env='REDIS_URL')
 
     postgres_user: str = Field(..., env='POSTGRES_USER')
     postgres_password: str = Field(..., env='POSTGRES_PASSWORD')
