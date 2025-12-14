@@ -13,9 +13,9 @@ from aiogram.types import (
 )
 
 from crud.enums import RoleEnum
-from crud.models import Admin, Visitor
+from crud.models import Admin, LookRequest, Visitor
 from settings import Settings
-from texts import NO_PERMISSIONS_TEXT
+from texts import LOOK_REVIEW_CAPTION_TEXT, LOOK_REVIEW_COMMENT_BUTTON_TEXT, LOOK_REVIEW_OK_BUTTON_TEXT, NO_PERMISSIONS_TEXT
 
 
 logger = logging.getLogger(__name__)
@@ -44,6 +44,16 @@ def _admin_keyboard() -> InlineKeyboardMarkup:
                     text='Все юзеры',
                     callback_data='admin_users',
                 )
+            ],
+            [
+                InlineKeyboardButton(
+                    text='Висящие луки',
+                    callback_data='admin_looks_pending',
+                ),
+                InlineKeyboardButton(
+                    text='Одобренные луки',
+                    callback_data='admin_looks_approved',
+                ),
             ],
         ]
     )
@@ -189,6 +199,34 @@ def _chunk_lines(lines: list[str], limit: int = 3500) -> list[str]:
     return chunks
 
 
+def _review_keyboard(request_id: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text=LOOK_REVIEW_OK_BUTTON_TEXT,
+                    callback_data=f'look_approve:{request_id}',
+                ),
+                InlineKeyboardButton(
+                    text=LOOK_REVIEW_COMMENT_BUTTON_TEXT,
+                    callback_data=f'look_comment:{request_id}',
+                ),
+            ]
+        ]
+    )
+
+
+async def _caption_for_request(request: LookRequest) -> str:
+    visitor = await Visitor.get_or_none(telegram_id=request.visitor_telegram_id)
+    name = visitor.full_name if visitor is not None else ''
+    username = visitor.telegram_username if visitor is not None else ''
+    return LOOK_REVIEW_CAPTION_TEXT.format(
+        visitor_telegram_id=request.visitor_telegram_id,
+        visitor_name=name,
+        visitor_username=username or '',
+    )
+
+
 @admin_router.callback_query(F.data == 'admin_users')
 async def admin_users(callback: CallbackQuery) -> None:
     if not _is_owner(callback.from_user.id):
@@ -209,6 +247,57 @@ async def admin_users(callback: CallbackQuery) -> None:
     for chunk in _chunk_lines(lines):
         if callback.message is not None:
             await callback.message.answer(text=chunk)
+    await callback.answer()
+
+
+@admin_router.callback_query(F.data == 'admin_looks_pending')
+async def admin_looks_pending(callback: CallbackQuery) -> None:
+    if not _is_owner(callback.from_user.id):
+        await callback.answer()
+        return
+
+    pending = await LookRequest.filter(status='pending')
+    if not pending:
+        if callback.message is not None:
+            await callback.message.answer(text='Активных заявок нет')
+        await callback.answer()
+        return
+
+    if callback.message is not None:
+        await callback.message.answer(text=f'Активных заявок: {len(pending)}')
+        for request in pending:
+            caption = await _caption_for_request(request)
+            await callback.message.answer_photo(
+                photo=request.photo_file_id,
+                caption=caption,
+                reply_markup=_review_keyboard(str(request.id)),
+            )
+
+    await callback.answer()
+
+
+@admin_router.callback_query(F.data == 'admin_looks_approved')
+async def admin_looks_approved(callback: CallbackQuery) -> None:
+    if not _is_owner(callback.from_user.id):
+        await callback.answer()
+        return
+
+    approved = await LookRequest.filter(status='approved')
+    if not approved:
+        if callback.message is not None:
+            await callback.message.answer(text='Одобренных заявок нет')
+        await callback.answer()
+        return
+
+    if callback.message is not None:
+        await callback.message.answer(text=f'Одобренных заявок: {len(approved)}')
+        for request in approved:
+            caption = await _caption_for_request(request)
+            await callback.message.answer_photo(
+                photo=request.photo_file_id,
+                caption=caption,
+            )
+
     await callback.answer()
 
 

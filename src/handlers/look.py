@@ -87,9 +87,8 @@ def _review_keyboard(request_id: str) -> InlineKeyboardMarkup:
 
 
 async def _iter_reviewer_ids() -> list[int]:
-    admins = await Admin.filter(role=RoleEnum.ADMIN).values_list('telegram_id', flat=True)
     moderators = await Admin.filter(role=RoleEnum.MODERATOR).values_list('telegram_id', flat=True)
-    ids = {int(x) for x in list(admins) + list(moderators) if x is not None}
+    ids = {int(x) for x in list(moderators) if x is not None}
     return sorted(ids)
 
 

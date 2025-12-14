@@ -8,7 +8,9 @@ from aiogram.fsm.storage.redis import RedisStorage
 from handlers.menu import menu_router
 from handlers.faq import faq_router
 from handlers.admin import admin_router
+from handlers.head import head_router
 from handlers.look import look_router
+from handlers.moderator import moderator_router
 from handlers.whishes import whishes_router
 from handlers.registration import registration_router
 from handlers.start import start_router
@@ -42,6 +44,8 @@ async def startup():
     dp.include_router(menu_router)
     dp.include_router(faq_router)
     dp.include_router(admin_router)
+    dp.include_router(head_router)
+    dp.include_router(moderator_router)
     dp.include_router(look_router)
     dp.include_router(whishes_router)
     logger.info('starting bot polling')

@@ -1,3 +1,4 @@
+# flake8: noqa
 REGISTRATION_WELCOME = (
     'Привет! 🎄 Вы попали в бота Новогоднего бала Президентской Академии 2025. '
     'Добро пожаловать в зимнюю сказку ✨'
@@ -51,12 +52,9 @@ FAQ_LIST_TITLE_TEXT = (
 )
 MENU_PREDICTION_STUB_TEXT = 'Скоро вы получите персональное новогоднее предсказание 🔮'
 
-WELCOME_IMAGE_URL = (
-    'https://raw.githubusercontent.com/mazazyrik/nb_bot/refs/heads/main/media/'
-    'test_pic.png'
-)
-MENU_IMAGE_URL = WELCOME_IMAGE_URL
-FAQ_IMAGE_URL = WELCOME_IMAGE_URL
+WELCOME_IMAGE_URL = 'https://raw.githubusercontent.com/mazazyrik/nb_bot/refs/heads/main/media/welcome.png'
+MENU_IMAGE_URL = 'https://raw.githubusercontent.com/mazazyrik/nb_bot/refs/heads/main/media/menu.png'
+FAQ_IMAGE_URL = 'https://raw.githubusercontent.com/mazazyrik/nb_bot/refs/heads/main/media/faq.png'
 
 WISH_LOADING_TEXT = (
     'Составляем персональное новогоднее пожелание именно для тебя... ✨'
@@ -85,7 +83,6 @@ LOOK_COMMENT_CANCEL_BUTTON_TEXT = 'Отмена'
 LOOK_APPROVED_TEXT = 'Ваш лук одобрен'
 LOOK_REVIEW_CAPTION_TEXT = (
     'Лук на оценку\n'
-    'id: {visitor_telegram_id}\n'
     'имя: {visitor_name}\n'
     'username: @{visitor_username}'
 )
