@@ -5,6 +5,7 @@ from aiogram.types import CallbackQuery, Message, Update
 
 from crud.enums import RoleEnum
 from crud.models import Admin
+from settings import Settings
 from texts import NO_PERMISSIONS_TEXT
 
 
@@ -28,15 +29,20 @@ class AdminRoleMiddleware(BaseMiddleware):
 
         telegram_id = from_user.id
         admin = await Admin.get_or_none(telegram_id=telegram_id)
-        if admin is None:
-            data['admin'] = None
-            data['admin_role'] = None
-            return await handler(event, data)
+        role: Optional[RoleEnum] = None
+        if admin is not None:
+            role = admin.role
+        else:
+            settings = Settings()
+            if settings.admin_id and telegram_id == settings.admin_id:
+                role = RoleEnum.ADMIN
+            elif telegram_id in settings.get_moderator_ids():
+                role = RoleEnum.MODERATOR
 
         data['admin'] = admin
-        data['admin_role'] = admin.role
+        data['admin_role'] = role
 
-        if self.allowed_roles is not None and admin.role not in self.allowed_roles:
+        if self.allowed_roles is not None and role not in self.allowed_roles:
             bot = data.get('bot')
             if bot is not None and hasattr(event, 'chat'):
                 await bot.send_message(

@@ -177,7 +177,7 @@ async def look_approve(
     admin: Optional[Admin],
     admin_role: Optional[RoleEnum],
 ) -> None:
-    if admin is None or admin_role not in {RoleEnum.ADMIN, RoleEnum.MODERATOR}:
+    if admin_role not in {RoleEnum.ADMIN, RoleEnum.MODERATOR}:
         await callback.answer()
         return
 
@@ -225,7 +225,7 @@ async def look_comment_start(
     admin: Optional[Admin],
     admin_role: Optional[RoleEnum],
 ) -> None:
-    if admin is None or admin_role not in {RoleEnum.ADMIN, RoleEnum.MODERATOR}:
+    if admin_role not in {RoleEnum.ADMIN, RoleEnum.MODERATOR}:
         await callback.answer()
         return
 
@@ -252,8 +252,12 @@ async def look_comment_cancel(callback: CallbackQuery, state: FSMContext) -> Non
 
 
 @look_router.message(LookModerationState.waiting_comment)
-async def look_comment_send(message: Message, state: FSMContext, admin: Optional[Admin]) -> None:
-    if admin is None:
+async def look_comment_send(
+    message: Message,
+    state: FSMContext,
+    admin_role: Optional[RoleEnum],
+) -> None:
+    if admin_role not in {RoleEnum.ADMIN, RoleEnum.MODERATOR}:
         await state.clear()
         return
 

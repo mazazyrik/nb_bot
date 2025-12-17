@@ -13,6 +13,7 @@ from aiogram.types import (
 
 from crud.enums import RoleEnum
 from crud.models import Admin, LookRequest, Visitor
+from crud.operations import get_look_requests_counts, get_users_count
 from texts import (
     LOOK_REVIEW_CAPTION_TEXT,
     LOOK_REVIEW_COMMENT_BUTTON_TEXT,
@@ -28,8 +29,11 @@ moderator_router = Router()
 def _refresh_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [InlineKeyboardButton(
-                text='Обновить', callback_data='moderator_looks_refresh')]
+            [
+                InlineKeyboardButton(text='Кол-во пользователей', callback_data='moderator_stats_users'),
+                InlineKeyboardButton(text='Кол-во заявок', callback_data='moderator_stats_requests'),
+            ],
+            [InlineKeyboardButton(text='Обновить', callback_data='moderator_looks_refresh')],
         ]
     )
 
@@ -90,7 +94,7 @@ async def _send_pending_requests(message: Message) -> None:
 
 
 def _is_moderator(admin: Optional[Admin], role: Optional[RoleEnum]) -> bool:
-    return admin is not None and role == RoleEnum.MODERATOR
+    return role == RoleEnum.MODERATOR
 
 
 @moderator_router.message(Command('_moderator'))
@@ -112,4 +116,47 @@ async def moderator_refresh(
         return
     if callback.message is not None:
         await _send_pending_requests(callback.message)
+    await callback.answer()
+
+
+@moderator_router.callback_query(F.data == 'moderator_stats_users')
+async def moderator_stats_users(
+    callback: CallbackQuery,
+    admin: Optional[Admin],
+    admin_role: Optional[RoleEnum],
+) -> None:
+    if not _is_moderator(admin, admin_role):
+        await callback.answer()
+        return
+    count = await get_users_count()
+    if callback.message is not None:
+        await callback.message.answer(text=f'Пользователей: {count}')
+    await callback.answer()
+
+
+@moderator_router.callback_query(F.data == 'moderator_stats_requests')
+async def moderator_stats_requests(
+    callback: CallbackQuery,
+    admin: Optional[Admin],
+    admin_role: Optional[RoleEnum],
+) -> None:
+    if not _is_moderator(admin, admin_role):
+        await callback.answer()
+        return
+    counts = await get_look_requests_counts()
+    total = counts.get('total', 0)
+    processed = counts.get('processed', 0)
+    pending = counts.get('pending', 0)
+    approved = counts.get('approved', 0)
+    commented = counts.get('commented', 0)
+    text = (
+        'Заявки:\n'
+        f'всего: {total}\n'
+        f'обработано: {processed}\n'
+        f'висящих: {pending}\n'
+        f'одобрено: {approved}\n'
+        f'с комментом: {commented}'
+    )
+    if callback.message is not None:
+        await callback.message.answer(text=text)
     await callback.answer()

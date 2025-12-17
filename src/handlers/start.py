@@ -29,7 +29,7 @@ async def start(
     visitor: Optional[Visitor],
     state: FSMContext,
 ) -> None:
-    if admin:
+    if admin_role is not None:
         if admin_role == RoleEnum.ADMIN:
             await message.answer_photo(
                 photo=WELCOME_IMAGE_URL,

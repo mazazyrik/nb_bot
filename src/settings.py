@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     parse_mode: str = Field(..., env='PARSE_MODE')
     redis_url: str = Field('redis://localhost:6379/0', env='REDIS_URL')
     admin_id: int = Field(0, env='ADMIN_ID')
+    moderator_id: int = Field(0, env='MODERATOR_ID')
+    moderator_ids: str = Field('', env='MODERATOR_IDS')
 
     postgres_user: str = Field(..., env='POSTGRES_USER')
     postgres_password: str = Field(..., env='POSTGRES_PASSWORD')
@@ -36,3 +38,21 @@ class Settings(BaseSettings):
     def _get_parse_mode(self):
         if self.parse_mode not in ParseMode.__members__:
             raise EnvVarNotFoundException('PARSE_MODE')
+
+    def get_moderator_ids(self) -> set[int]:
+        ids: set[int] = set()
+        if self.moderator_id:
+            ids.add(int(self.moderator_id))
+
+        raw = (self.moderator_ids or '').strip()
+        if raw:
+            parts = raw.replace(';', ',').split(',')
+            for part in parts:
+                part = part.strip()
+                if not part:
+                    continue
+                try:
+                    ids.add(int(part))
+                except ValueError:
+                    continue
+        return ids

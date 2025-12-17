@@ -15,6 +15,7 @@ from aiogram.types import (
 
 from crud.enums import RoleEnum
 from crud.models import Admin, LookRequest, Visitor
+from crud.operations import get_look_requests_counts, get_users_count
 from settings import Settings
 from texts import LOOK_REVIEW_CAPTION_TEXT, LOOK_REVIEW_COMMENT_BUTTON_TEXT, LOOK_REVIEW_OK_BUTTON_TEXT, NO_PERMISSIONS_TEXT
 
@@ -45,6 +46,16 @@ def _admin_keyboard() -> InlineKeyboardMarkup:
                     text='Все юзеры',
                     callback_data='admin_users',
                 )
+            ],
+            [
+                InlineKeyboardButton(
+                    text='Кол-во пользователей',
+                    callback_data='admin_stats_users',
+                ),
+                InlineKeyboardButton(
+                    text='Кол-во заявок',
+                    callback_data='admin_stats_requests',
+                ),
             ],
             [
                 InlineKeyboardButton(
@@ -146,6 +157,41 @@ async def admin_cancel(callback: CallbackQuery, state: FSMContext) -> None:
         await callback.answer()
         return
     await state.clear()
+    await callback.answer()
+
+
+@admin_router.callback_query(F.data == 'admin_stats_users')
+async def admin_stats_users(callback: CallbackQuery) -> None:
+    if not _is_owner(callback.from_user.id):
+        await callback.answer()
+        return
+    count = await get_users_count()
+    if callback.message is not None:
+        await callback.message.answer(text=f'Пользователей: {count}')
+    await callback.answer()
+
+
+@admin_router.callback_query(F.data == 'admin_stats_requests')
+async def admin_stats_requests(callback: CallbackQuery) -> None:
+    if not _is_owner(callback.from_user.id):
+        await callback.answer()
+        return
+    counts = await get_look_requests_counts()
+    total = counts.get('total', 0)
+    processed = counts.get('processed', 0)
+    pending = counts.get('pending', 0)
+    approved = counts.get('approved', 0)
+    commented = counts.get('commented', 0)
+    text = (
+        'Заявки:\n'
+        f'всего: {total}\n'
+        f'обработано: {processed}\n'
+        f'висящих: {pending}\n'
+        f'одобрено: {approved}\n'
+        f'с комментом: {commented}'
+    )
+    if callback.message is not None:
+        await callback.message.answer(text=text)
     await callback.answer()
 
 

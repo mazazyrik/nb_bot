@@ -8,6 +8,7 @@ from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMar
 
 from crud.enums import RoleEnum
 from crud.models import Admin, LookRequest, Visitor
+from crud.operations import get_look_requests_counts, get_users_count
 from texts import LOOK_REVIEW_CAPTION_TEXT, NO_PERMISSIONS_TEXT
 
 
@@ -16,7 +17,7 @@ head_router = Router()
 
 
 def _is_head(admin: Optional[Admin], role: Optional[RoleEnum]) -> bool:
-    return admin is not None and role == RoleEnum.HEAD
+    return role == RoleEnum.HEAD
 
 
 def _head_keyboard() -> InlineKeyboardMarkup:
@@ -25,6 +26,10 @@ def _head_keyboard() -> InlineKeyboardMarkup:
             [
                 InlineKeyboardButton(text='Все юзеры', callback_data='head_users'),
                 InlineKeyboardButton(text='Одобренные луки', callback_data='head_looks'),
+            ],
+            [
+                InlineKeyboardButton(text='Кол-во пользователей', callback_data='head_stats_users'),
+                InlineKeyboardButton(text='Кол-во заявок', callback_data='head_stats_requests'),
             ],
         ]
     )
@@ -136,6 +141,49 @@ async def head_looks(
         return
     if callback.message is not None:
         await _send_approved_looks(callback.message)
+    await callback.answer()
+
+
+@head_router.callback_query(F.data == 'head_stats_users')
+async def head_stats_users(
+    callback: CallbackQuery,
+    admin: Optional[Admin],
+    admin_role: Optional[RoleEnum],
+) -> None:
+    if not _is_head(admin, admin_role):
+        await callback.answer()
+        return
+    count = await get_users_count()
+    if callback.message is not None:
+        await callback.message.answer(text=f'Пользователей: {count}')
+    await callback.answer()
+
+
+@head_router.callback_query(F.data == 'head_stats_requests')
+async def head_stats_requests(
+    callback: CallbackQuery,
+    admin: Optional[Admin],
+    admin_role: Optional[RoleEnum],
+) -> None:
+    if not _is_head(admin, admin_role):
+        await callback.answer()
+        return
+    counts = await get_look_requests_counts()
+    total = counts.get('total', 0)
+    processed = counts.get('processed', 0)
+    pending = counts.get('pending', 0)
+    approved = counts.get('approved', 0)
+    commented = counts.get('commented', 0)
+    text = (
+        'Заявки:\n'
+        f'всего: {total}\n'
+        f'обработано: {processed}\n'
+        f'висящих: {pending}\n'
+        f'одобрено: {approved}\n'
+        f'с комментом: {commented}'
+    )
+    if callback.message is not None:
+        await callback.message.answer(text=text)
     await callback.answer()
 
 

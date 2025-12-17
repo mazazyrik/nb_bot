@@ -1,5 +1,5 @@
 from crud.exceptions import AdminNotFound
-from crud.models import Admin, Visitor
+from crud.models import Admin, LookRequest, Visitor
 from schemas.visitor import VisitorSchema
 
 
@@ -35,3 +35,22 @@ async def get_whish(telegram_id: int) -> str | None:
     if visitor is None:
         return None
     return visitor.whish
+
+
+async def get_users_count() -> int:
+    return await Visitor.all().count()
+
+
+async def get_look_requests_counts() -> dict[str, int]:
+    total = await LookRequest.all().count()
+    pending = await LookRequest.filter(status='pending').count()
+    approved = await LookRequest.filter(status='approved').count()
+    commented = await LookRequest.filter(status='commented').count()
+    processed = await LookRequest.exclude(status='pending').count()
+    return {
+        'total': total,
+        'pending': pending,
+        'processed': processed,
+        'approved': approved,
+        'commented': commented,
+    }
